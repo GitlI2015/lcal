@@ -1,0 +1,2 @@
+# MiniComp
+A MiniComputer
