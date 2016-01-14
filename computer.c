@@ -1,11 +1,9 @@
 #include<stdio.h>
 #include<ctype.h>
-#include<math.h>
 #include<stdlib.h>
 #include<string.h>
 #include"mathconst.h"
 
-#include<math.h>
 
 int GetExpression(char *);
 void Compute(char *, int );

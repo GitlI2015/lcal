@@ -2,8 +2,8 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#include<math.h>
 #include<ctype.h>
+#include<math.h>
 
 
 extern double *Answers;
@@ -222,6 +222,7 @@ int Match(int lb_pos)  //       return the distance between two brackets
         }
         j++;
     }
+	return 0;
 }
 
 /*
@@ -440,7 +441,7 @@ double MacroReplace(char * args, int * start)
             return 0;
         }
     }
-
+	return 0;
 }
 
 
