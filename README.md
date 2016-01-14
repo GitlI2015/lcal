@@ -1,2 +1,2 @@
 # MiniComp
-V1.2.5: A MiniComputer for practicing coding skill
+V1.2.5: It's a MiniComputer for practicing my coding skill. 
