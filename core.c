@@ -60,7 +60,7 @@ double SubCompute(char * args, int max)
         err_sgn = 1;
         return 0;
     }
-    if(args[i]=='-')
+    if(args[i] == '-')
     {
         mexp->num[num_ctl++] = -1;
         mexp->chr[chr_ctl++] = '*';
@@ -125,7 +125,7 @@ double SubCompute(char * args, int max)
             case '^':
             {
                 mexp->chr[chr_ctl++] = '^';
-                if(args[i + 1]=='-')
+                if(args[i + 1] == '-')
                 {
                     mexp->num[num_ctl++] = -1;
                     mexp->chr[chr_ctl++] = '*';
@@ -193,7 +193,7 @@ int Match(int lb_pos)  //       return the distance between two brackets
     int lcount = 1, rcount = 0;;
     i = lb_pos;
     for (j = 0; j < BRKT_MAX; j++)
-        if (stkr[j] > lb_pos) 	break;
+        if (stkr[j] > stkl[lb_pos]) 	break;
     m = stkr[j];
     while (stkr[j] > 0)
     {
@@ -204,13 +204,12 @@ int Match(int lb_pos)  //       return the distance between two brackets
             {
                 if (lcount == rcount)
                 {
-                    if (k + 1 == BRKT_MAX || stkl[k + 1] == 0)
-                        return (stkr[j] - stkl[lb_pos] - 1);//find matching one's position
-                    if (stkl[k + 1] < stkr[j])
+                    if (stkl[k + 1] != 0 && stkl[k + 1] < stkr[j])
                     {
                         lcount = 1;
                         break;
                     }
+                    return (stkr[j] - stkl[lb_pos] - 1);//find matching one's position
                 }
             }
             else
@@ -222,7 +221,7 @@ int Match(int lb_pos)  //       return the distance between two brackets
         }
         j++;
     }
-	return 0;
+    return 0;
 }
 
 /*
@@ -441,7 +440,7 @@ double MacroReplace(char * args, int * start)
             return 0;
         }
     }
-	return 0;
+    return 0;
 }
 
 
@@ -463,7 +462,7 @@ int StrMatch(const char * arg_1, const char * arg_2) //Assistant function
 
 int IsInteger(double num)
 {
-    return ((long long)num - num)<0.000000001 && (num - (long long)num) < 0.000000001?1:0;
+    return ((long long)num - num) < 0.000000001 && (num - (long long)num) < 0.000000001 ? 1 : 0;
 }
 
 
