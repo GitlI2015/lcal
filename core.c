@@ -127,9 +127,8 @@ double SubCompute(char * args, int max)
                 mexp->chr[chr_ctl++] = '^';
                 if(args[i + 1] == '-')
                 {
-                    mexp->num[num_ctl++] = -1;
-                    mexp->chr[chr_ctl++] = '*';
-                    i += 1;
+                    i++;
+                    mexp->num[num_ctl++] = StringToFloat(args, &i);
                 }
                 break;
             }
@@ -175,7 +174,7 @@ double SubCompute(char * args, int max)
         result = Core_Cmp(mexp);
     else
     {
-        printf("error: expression incorrect.\n");
+        printf("error: expression incomplete.\n");
         err_sgn = 1;
     }
     free(mexp);
@@ -338,8 +337,14 @@ double StringToFloat(char * args, int * start)
 {
     double t = 0;
     double xt = 0.1;
-    int k;
-    for (k = *(start); isdigit(args[k]); k++)
+    int k = *start;
+    int neg_token = 0;
+    if (args[k] == '-')
+    {
+        neg_token = 1;
+        k++;
+    }
+    for (; isdigit(args[k]); k++)
     {
         t *= 10;
         t += args[k] - '0';
@@ -356,12 +361,15 @@ double StringToFloat(char * args, int * start)
     }
     if (args[k] == '.')
     {
-        printf("error: wrong form of float number");
+        printf("error: wrong float number");
         err_sgn = 1;
         return 0;
     }
     *start = k - 1;
-    return t;
+    if(neg_token)
+        return -t;
+    else
+        return t;
 }
 
 
