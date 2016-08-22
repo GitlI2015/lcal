@@ -1,20 +1,24 @@
 CFLAGS=-Wall -lm
-CC=clang
+CC=gcc
 
-TARGET=mcm
+TARGET=lcal
 SRCS=computer.c\
 	 core.c
-INC=-I./
 
 OBJS=$(SRCS:.c=.o)
+
+%.o:%.c
+	$(CC) -o $@ -c $<
 
 $(TARGET):$(OBJS)
 #	@echo TARGET:$@
 #	@echo OBJECTS:$^
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
 	rm -rf $(TARGET) $(OBJS)
 
-%.o:%.c
-	$(CC) -o $@ -c $<
+install:
+	cp $(TARGET) /usr/bin/
+
+

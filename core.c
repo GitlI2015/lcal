@@ -9,13 +9,14 @@
 extern double *Answers;
 extern int Answer_Counter;
 extern int err_sgn;
+extern int exit_flag;
 
 
 void Compute(char * args, int max)
 {
     Reset();
     int i;
-    for (lctl = 0, i = 0, rctl = 0; i < strlen(args); i++)
+    for (lctl = 0, i = 0, rctl = 0; (unsigned)i < strlen(args); i++)
     {
         if (args[i] == '(')
             stkl[lctl++] = i;
@@ -54,12 +55,21 @@ double SubCompute(char * args, int max)
     double result = 0;
     EXP * mexp = (EXP *)malloc(sizeof(EXP));
     i = 0;
-    if (StrMatch((args), "help") && strlen(args) == max)
-    {
-        GetHelp();
-        err_sgn = 1;
-        return 0;
-    }
+	if(strlen(args) == (unsigned)max)
+	{
+		if (StrMatch(args, "help"))
+		{
+			GetHelp();
+			err_sgn = 1;
+			return 0;
+		}
+		else if(StrMatch(args, "exit"))
+		{
+			err_sgn = 1;
+			exit_flag = 1;
+			return 0;
+		}
+	}
     if(args[i] == '-')
     {
         mexp->num[num_ctl++] = -1;

@@ -13,6 +13,7 @@ void ModeIn(char * );
 double * Answers;
 int Answer_Counter = 1;
 int err_sgn = 0;
+int exit_flag = 0;
 
 /*
 			declaration
@@ -21,16 +22,17 @@ int err_sgn = 0;
 int main()
 {
     char args[MAX_SIZE];
-    puts("I am a mini-computer.I can calculate mathematic expressions");
+	memset(args,sizeof(char),MAX_SIZE);
+    puts("mini-calculator by li, 2015");
     puts("enter \"help\" to get manual                               ");
     Answers = (double *)malloc(1024 * 10 * sizeof(double));
-    while (1)
+    while (!exit_flag)
     {
         switch (GetExpression(args))
         {
         case -2:
-            printf("Thank you for using it.\n           ----by lijh 2015\n");
-            return 0;
+			free(Answers);
+			exit_flag = 1;
         case -3:
             ModeIn(args + 1);
             continue;
