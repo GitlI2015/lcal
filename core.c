@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include<math.h>
+#include<complex.h>
 
 
 extern double *Answers;
@@ -21,8 +22,7 @@ void Compute(char * args, int max)
         if (args[i] == '(')
             stkl[lctl++] = i;
         else if (args[i] == ')')
-            stkr[rctl++] = i;
-        if (rctl > lctl)
+            stkr[rctl++] = i; if (rctl > lctl)
             break;
     }
     i = 0;
@@ -55,21 +55,21 @@ double SubCompute(char * args, int max)
     double result = 0;
     EXP * mexp = (EXP *)malloc(sizeof(EXP));
     i = 0;
-	if(strlen(args) == (unsigned)max)
-	{
-		if (StrMatch(args, "help"))
-		{
-			GetHelp();
-			err_sgn = 1;
-			return 0;
-		}
-		else if(StrMatch(args, "exit"))
-		{
-			err_sgn = 1;
-			exit_flag = 1;
-			return 0;
-		}
-	}
+    if(strlen(args) == (unsigned)max)
+    {
+        if (StrMatch(args, "help"))
+        {
+            GetHelp();
+            err_sgn = 1;
+            return 0;
+        }
+        else if(StrMatch(args, "exit"))
+        {
+            err_sgn = 1;
+            exit_flag = 1;
+            return 0;
+        }
+    }
     if(args[i] == '-')
     {
         mexp->num[num_ctl++] = -1;
@@ -516,11 +516,7 @@ long long int Factorial(int input, int cas)
 
 /*********************_MATH_FUNCTION_END_************************/
 
-void ModeIn(char * args)
-{
-    return;
-}
-
+void Mode(char *args);
 
 /*********************_MODE_MODULE_START_************************/
 

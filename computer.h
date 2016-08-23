@@ -47,7 +47,7 @@ double MacroReplace(char *, int *);
 int StrMatch(const char *, const char *);
 int IsInteger(double );
 
-void ModeIn(char *);
+void Mode(char *);
 void Reset(void);
 
 void GetHelp(void);
