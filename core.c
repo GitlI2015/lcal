@@ -8,185 +8,224 @@
 
 
 extern double *Answers;
+extern struct var_table table;
 extern int Answer_Counter;
 extern int err_sgn;
 extern int exit_flag;
 
+typedef struct exp {
+    char chr[MAX_SIZE];
+    double num[MAX_SIZE];
+} EXP;
 
-void Compute(char * args, int max)
+/*
+
+			mathematic expression consistss of
+			digit numbers and mathematic charactors.
+			(ignoring brackets)charactors and numbers
+			appears one by one
+
+ */
+
+int Match(int lb_pos);
+
+double SubCompute(char *, int );
+double Core_Cmp(EXP *);
+
+double StringToFloat(char *, int *);
+
+double MacroReplace(char *, int *);
+int StrMatch(const char *, const char *);
+int IsInteger(double );
+
+
+int stkl[BRKT_MAX] = {0};
+int stkr[BRKT_MAX] = {0};
+int lctl, rctl;
+int lbrkt = 0;
+
+/*
+
+			stacks
+
+ */
+
+
+
+void Compute(char *args, int max)
 {
     Reset();
     int i;
-    for (lctl = 0, i = 0, rctl = 0; (unsigned)i < strlen(args); i++)
-    {
+
+    for (lctl = 0, i = 0, rctl = 0; (unsigned)i < strlen(args); i++) {
         if (args[i] == '(')
             stkl[lctl++] = i;
         else if (args[i] == ')')
-            stkr[rctl++] = i; if (rctl > lctl)
+            stkr[rctl++] = i;
+
+        if (rctl > lctl)
             break;
     }
+
     i = 0;
-    if (lctl != rctl)
-    {
+
+    if (lctl != rctl) {
         printf("Brackets don't match\n");
         return;
     }
+
     Answers[Answer_Counter - 1] = SubCompute(args, max);
 
-    if (!err_sgn)
-    {
+    if (!err_sgn) {
         if(IsInteger(Answers[Answer_Counter - 1]))
             printf("Output[%d]:%lld\n", Answer_Counter, (long long)Answers[Answer_Counter - 1]);
         else
             printf("Output[%d]:%.12f\n", Answer_Counter, Answers[Answer_Counter - 1]);
+
         Answer_Counter++;
     }
+
     return;
 }
 
 
 
 
-double SubCompute(char * args, int max)
+double SubCompute(char *args, int max)
 
 {
     int i, temp;
     int chr_ctl = 0, num_ctl = 0;
     double result = 0;
-    EXP * mexp = (EXP *)malloc(sizeof(EXP));
+    EXP *mexp = (EXP *)malloc(sizeof(EXP));
     i = 0;
-    if(strlen(args) == (unsigned)max)
-    {
-        if (StrMatch(args, "help"))
-        {
+
+    if(strlen(args) == (unsigned)max) {
+        if (StrMatch(args, "help")) {
             GetHelp();
             err_sgn = 1;
             return 0;
-        }
-        else if(StrMatch(args, "exit"))
-        {
+        } else if(StrMatch(args, "exit")) {
             err_sgn = 1;
             exit_flag = 1;
             return 0;
         }
     }
-    if(args[i] == '-')
-    {
+
+    if(args[i] == '-') {
         mexp->num[num_ctl++] = -1;
         mexp->chr[chr_ctl++] = '*';
         i++;
     }
-    while (i < max)
-    {
+
+    while (i < max) {
         if (isdigit(args[i]))
             mexp->num[num_ctl++] = StringToFloat(args, &i);
-        else if (StrMatch(args + i, "mod"))
-        {
+        else if (StrMatch(args + i, "mod")) {
             mexp->chr[chr_ctl++] = '%';
             i += 2;
-        }
-        else if (isalpha(args[i]))
+        } else if (isalpha(args[i]))
             mexp->num[num_ctl++] = MacroReplace(args, &i);
-        else
-        {
-            switch (args[i])
-            {
+        else {
+            switch (args[i]) {
             case ')':
             case ']':
             case ' ':
                 break;
+
             case '(':
                 if(num_ctl - chr_ctl == 1)
                     mexp->chr[chr_ctl++] = '*';
+
                 temp = lbrkt;
                 mexp->num[num_ctl++] = SubCompute(args + i + 1, Match(lbrkt++));
                 i += Match(temp) + 1;
                 break;
+
             case '+':
             case '-':
             case '*':
             case '/':
                 mexp->chr[chr_ctl++] = args[i];
                 break;
+
             case '!':
-                if (IsInteger(mexp->num[num_ctl - 1]))
-                {
-                    if(mexp->num[num_ctl - 1] < 0)
-                    {
+                if (IsInteger(mexp->num[num_ctl - 1])) {
+                    if(mexp->num[num_ctl - 1] < 0) {
                         printf("The parameter of Factorial function should be a natural number.\n");
                         err_sgn = 1;
                         return 0;
                     }
-                    if (args[i + 1] == '!')
-                    {
+
+                    if (args[i + 1] == '!') {
                         i++;
                         mexp->num[num_ctl - 1] = (double)Factorial((int)mexp->num[num_ctl - 1], 0);
-                    }
-                    else
+                    } else
                         mexp->num[num_ctl - 1] = (double)Factorial((int)mexp->num[num_ctl - 1], 1);
+
                     break;
-                }
-                else
-                {
+                } else {
                     printf("The parameter of Factorial function should be an integer.\n");
                     err_sgn = 1;
                     return 0;
                 }
-            case '^':
-            {
+
+            case '^': {
                 mexp->chr[chr_ctl++] = '^';
-                if(args[i + 1] == '-')
-                {
+
+                if(args[i + 1] == '-') {
                     i++;
                     mexp->num[num_ctl++] = StringToFloat(args, &i);
                 }
+
                 break;
             }
-            case '%':
-            {
+
+            case '%': {
                 if(isdigit(args[i + 1]))
                     temp = StringToFloat(args + 1, &i);
                 else
                     temp = Answer_Counter;
+
                 i++;
-                if (IsInteger((double)temp))
-                {
-                    if (temp >= Answer_Counter)
-                    {
+
+                if (IsInteger((double)temp)) {
+                    if (temp >= Answer_Counter) {
                         printf("usage:\"%%num\"  num:the number should be less than current order number\n");
                         err_sgn = 1;
                         return 0;
-                    }
-                    else
-                    {
+                    } else {
                         mexp->num[num_ctl++] = Answers[temp - 1];
                         break;
                     }
-                }
-                else
-                {
+                } else {
                     printf("usage:%%number  number:the number should be an integer");
                     err_sgn = 1;
                     break;
                 }
             }
+
             default:
                 printf("I can't understand \"%c\"\n", args[i]);
                 err_sgn = 1;
             }
         }
+
         i++;
+
         if (err_sgn)
             break;
     }
+
     mexp->chr[chr_ctl] = '\0';
+
     if (chr_ctl + 1 == num_ctl)
         result = Core_Cmp(mexp);
-    else
-    {
+    else {
         printf("error: expression incomplete.\n");
         err_sgn = 1;
     }
+
     free(mexp);
     return result;
 }
@@ -201,35 +240,36 @@ int Match(int lb_pos)  //       return the distance between two brackets
     int i, j, k, m;
     int lcount = 1, rcount = 0;;
     i = lb_pos;
+
     for (j = 0; j < BRKT_MAX; j++)
         if (stkr[j] > stkl[lb_pos]) 	break;
+
     m = stkr[j];
-    while (stkr[j] > 0)
-    {
+
+    while (stkr[j] > 0) {
         rcount++;
-        for (k = i; ; k++)
-        {
-            if (stkl[k] < m)
-            {
-                if (lcount == rcount)
-                {
-                    if (stkl[k + 1] != 0 && stkl[k + 1] < stkr[j])
-                    {
+
+        for (k = i; ; k++) {
+            if (stkl[k] < m) {
+                if (lcount == rcount) {
+                    if (stkl[k + 1] != 0 && stkl[k + 1] < stkr[j]) {
                         lcount = 1;
                         break;
                     }
+
                     return (stkr[j] - stkl[lb_pos] - 1);//find matching one's position
                 }
-            }
-            else
-            {
+            } else {
                 lcount = 1;
                 break;
             }
+
             lcount++;
         }
+
         j++;
     }
+
     return 0;
 }
 
@@ -237,95 +277,89 @@ int Match(int lb_pos)  //       return the distance between two brackets
 		Core_Cmp(): finish calculating
  */
 
-double Core_Cmp(EXP * expr)
+double Core_Cmp(EXP *expr)
 {
     int i, j, t;
-    if ((t = strlen(expr->chr)) != 0)
-    {
-        for (i = 0; i < t; i++)
-        {
-            if (expr->chr[i] == '^')
-            {
+
+    if ((t = strlen(expr->chr)) != 0) {
+        for (i = 0; i < t; i++) {
+            if (expr->chr[i] == '^') {
                 expr->num[i] = pow(expr->num[i], expr->num[i + 1]);
-                for (j = i; j < t; j++)
-                {
+
+                for (j = i; j < t; j++) {
                     expr->num[j + 1] = expr->num[j + 2];
                     expr->chr[j] = expr->chr[j + 1];
                 }
+
                 t--;
                 i = -1;
             }
         }
-        for (i = 0; i < t; i++)
-        {
-            if (expr->chr[i] == '*')
-            {
+
+        for (i = 0; i < t; i++) {
+            if (expr->chr[i] == '*') {
                 expr->num[i] *= expr->num[i + 1];
-                for (j = i; j < t; j++)
-                {
+
+                for (j = i; j < t; j++) {
                     expr->num[j + 1] = expr->num[j + 2];
                     expr->chr[j] = expr->chr[j + 1];
                 }
+
                 t--;
                 i = -1;
-            }
-            else if (expr->chr[i] == '/')
-            {
+            } else if (expr->chr[i] == '/') {
                 expr->num[i] /= expr->num[i + 1];
-                for (j = i; j < t; j++)
-                {
+
+                for (j = i; j < t; j++) {
                     expr->num[j + 1] = expr->num[j + 2];
                     expr->chr[j] = expr->chr[j + 1];
                 }
+
                 i = -1;
                 t--;
-            }
-            else if (expr->chr[i] == '%')
-            {
-                if (IsInteger(expr->num[i]) && IsInteger(expr->num[i + 1]))
-                {
+            } else if (expr->chr[i] == '%') {
+                if (IsInteger(expr->num[i]) && IsInteger(expr->num[i + 1])) {
                     expr->num[i] = (long long)expr->num[i] % (long long)expr->num[i + 1];
-                    for (j = i; j < t; j++)
-                    {
+
+                    for (j = i; j < t; j++) {
                         expr->num[j + 1] = expr->num[j + 2];
                         expr->chr[j] = expr->chr[j + 1];
                     }
+
                     i = -1;
                     t--;
-                }
-                else
-                {
+                } else {
                     printf("error: oprands of mod should be integer.\n");
                     err_sgn = 1;
                 }
             }
         }
-        for (i = 0; i < t; i++)
-        {
-            if (expr->chr[i] == '+')
-            {
+
+        for (i = 0; i < t; i++) {
+            if (expr->chr[i] == '+') {
                 expr->num[i] += expr->num[i + 1];
-                for (j = i; j < t; j++)
-                {
+
+                for (j = i; j < t; j++) {
                     expr->num[j + 1] = expr->num[j + 2];
                     expr->chr[j] = expr->chr[j + 1];
                 }
+
                 i = -1;
                 t--;
-            }
-            else if (expr->chr[i] == '-')
-            {
+            } else if (expr->chr[i] == '-') {
                 expr->num[i] -= expr->num[i + 1];
-                for (j = i; j < t; j++)
-                {
+
+                for (j = i; j < t; j++) {
                     expr->num[j + 1] = expr->num[j + 2];
                     expr->chr[j] = expr->chr[j + 1];
                 }
+
                 i = -1;
                 t--;
             }
         }
     }
+
     return expr->num[0];
 }
 
@@ -334,48 +368,51 @@ double Core_Cmp(EXP * expr)
 void Reset(void)
 {
     int i;
-    for (i = 0; i < BRKT_MAX; i++)
-    {
+
+    for (i = 0; i < BRKT_MAX; i++) {
         stkl[i] = stkr[i] = 0;
     }
+
     lbrkt = 0;
     err_sgn = 0;
 }
 
 
-double StringToFloat(char * args, int * start)
+double StringToFloat(char *args, int *start)
 {
     double t = 0;
     double xt = 0.1;
     int k = *start;
     int neg_token = 0;
-    if (args[k] == '-')
-    {
+
+    if (args[k] == '-') {
         neg_token = 1;
         k++;
     }
-    for (; isdigit(args[k]); k++)
-    {
+
+    for (; isdigit(args[k]); k++) {
         t *= 10;
         t += args[k] - '0';
     }
-    if (args[k] == '.')
-    {
+
+    if (args[k] == '.') {
         k++;
-        while (isdigit(args[k]))
-        {
+
+        while (isdigit(args[k])) {
             t += (args[k] - '0') * xt;
             xt /= 10;
             k++;
         }
     }
-    if (args[k] == '.')
-    {
+
+    if (args[k] == '.') {
         printf("error: wrong float number");
         err_sgn = 1;
         return 0;
     }
+
     *start = k - 1;
+
     if(neg_token)
         return -t;
     else
@@ -383,97 +420,152 @@ double StringToFloat(char * args, int * start)
 }
 
 
-double MacroReplace(char * args, int * start)
+double MacroReplace(char *args, int *start)
 {
     int temp = (*start);
     int length = strlen(args);
     int i;
     int cnt_l = 0, cnt_r = 0;
-    while (isalpha(args[(*start) + 1]) && (*start) < length)
-        (*start)++;
-    if (args[(*start) + 1] == '[')
-    {
-        i = (*start);
-        (*start)++;
-        do
-        {
-            if (args[(*start)] == '[') cnt_l++;
-            if (args[(*start)] == ']') cnt_r++;
-            if ((*start) == length)
-            {
+    char *lp;
+    int sl;
+    char t[20];
+
+    while (isalpha(args[(*start)]) && (*start) < length)
+        t[(*start) - temp] = args[(*start)++];
+
+    t[(*start) - temp] = '\0';
+
+    (*start)--;
+
+    if (args[(*start) + 1] == '(') {
+        i = (*start)++;
+
+        do {
+            if (args[(*start)] == '(') cnt_l++;
+
+            if (args[(*start)] == ')') cnt_r++;
+
+            if ((*start) == length) {
                 printf("error: square brackets don't match\n");
                 err_sgn = 1;
                 return 0;
             }
+
             (*start)++;
-        }
-        while (cnt_l != cnt_r);
+        } while (cnt_l != cnt_r);
+
         (*start)--;
-        if (i - temp == 2)
-        {
-            if      (StrMatch(args + temp, "sin")) return sin(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "cos")) return cos(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "tan")) return tan(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "log")) return log(SubCompute(args + i + 2, (*start) - i - 2));
-        }
-        else if (i - temp == 3)
-        {
-            if      (StrMatch(args + temp, "sinh")) return sinh(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "cosh")) return cosh(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "tanh")) return tanh(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "asin")) return asin(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "acos")) return acos(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "atan")) return atan(SubCompute(args + i + 2, (*start) - i - 2));
-        }
-        else if (i - temp == 4)
-        {
-            if      (StrMatch(args + temp, "asinh")) return asinh(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "acosh")) return acosh(SubCompute(args + i + 2, (*start) - i - 2));
-            else if (StrMatch(args + temp, "atanh")) return atanh(SubCompute(args + i + 2, (*start) - i - 2));
-        }
-        else
-        {
+        lp = args + i + 2;
+        sl = (*start) - i - 2;
+
+        if (i - temp == 2) {
+            if      (StrMatch(args + temp, "sin")) return sin(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "cos")) return cos(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "tan")) return tan(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "log")) return log(SubCompute(lp, sl));
+        } else if (i - temp == 3) {
+            if      (StrMatch(args + temp, "sinh")) return sinh(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "cosh")) return cosh(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "tanh")) return tanh(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "asin")) return asin(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "acos")) return acos(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "atan")) return atan(SubCompute(lp, sl));
+        } else if (i - temp == 4) {
+            if      (StrMatch(args + temp, "asinh")) return asinh(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "acosh")) return acosh(SubCompute(lp, sl));
+            else if (StrMatch(args + temp, "atanh")) return atanh(SubCompute(lp, sl));
+        } else {
             printf("error: function unidentified:\"");
+
             for (i = temp; i <= (*start); i++)
                 printf("%c", args[i]);
+
             printf("\"\n");
             err_sgn = 1;
             return 0;
         }
-    }
-    else
-    {
+
+    } else {
+
         if      (StrMatch(args + temp, "EL" ) && !isalpha(args[temp + 2])) return EL;
         else if (StrMatch(args + temp, "GM" ) && !isalpha(args[temp + 2])) return GM;
         else if (StrMatch(args + temp, "PI" ) && !isalpha(args[temp + 2])) return PI;
         else if (StrMatch(args + temp, "PHI") && !isalpha(args[temp + 3])) return PHI;
-        else
-        {
+        else {
+            int index = find_var(&table, t);
+            struct var_pair *var;
 
-            printf("error: input unidentified \"");
-            for (i = temp; i <= (*start); i++)
-                printf("%c", args[i]);
-            printf("\"\n");
-            err_sgn = 1;
+            if(index != -1) {
+                var = get_var(&table, index);
+
+                (*start)++;
+
+                while(isspace(args[((*start))])) ++(*start);
+
+                if(args[*start] == '=') {
+                    double *v = (double *)malloc(sizeof(double));
+                    *v = SubCompute(args + (*start) + 1, length - (*start) - 1);
+                    var->val.value = v;
+					(*start)=length;
+					return *v;
+                } else {
+                    (*start)--;
+
+                    if(var->val.val_type == normal)
+                        return *(double *)var->val.value;
+                }
+
+            } else {
+                (*start)++;
+
+                while(isspace(args[((*start))])) ++(*start);
+
+                if(args[*start] == '=') {
+                    strcpy(table.contents[table.size].var_name, t);
+                    table.contents[table.size].val.val_type = normal;
+                    double *v = (double *)malloc(sizeof(double));
+                    *v = SubCompute(args + (*start) + 1, length - (*start) - 1);
+                    table.contents[table.size].val.value = v;
+                    ++table.size;
+
+                    if(table.size == table.max_size)
+                        table.resize(table.this);
+
+                    (*start) = length;
+                    return *v;
+                } else {
+                    printf("error: input unidentified \"");
+
+                    for (i = temp; i <= (*start); i++)
+                        printf("%c", args[i]);
+
+                    printf("\"\n");
+                    err_sgn = 1;
+                }
+            }
+
             return 0;
         }
     }
+
     return 0;
 }
 
 
-int StrMatch(const char * arg_1, const char * arg_2) //Assistant function
+int StrMatch(const char *arg_1, const char *arg_2) //Assistant function
 {
     int len = strlen(arg_2);
     char p1[len], p2[len];
     int i;
-    for (i = 0; i < len; i++)
-    {
+
+    for (i = 0; i < len; i++) {
         p1[i] = toupper(arg_1[i]);
         p2[i] = toupper(arg_2[i]);
     }
+
     for (i = 0; i < len; i++)
         if (p1[i] != p2[i])  return 0;
+
     return 1;
 }
 
@@ -496,17 +588,17 @@ int IsInteger(double num)
 long long int Factorial(int input, int cas)
 {
     long long int result = 1;
-    if (cas) while (input > 0)
-        {
+
+    if (cas) while (input > 0) {
             result *= input;
             input--;
         }
     else
-        while (input > 0)
-        {
+        while (input > 0) {
             result *= input;
             input -= 2;
         }
+
     return result;
 }
 
@@ -514,11 +606,30 @@ long long int Factorial(int input, int cas)
 
 
 
-/*********************_MATH_FUNCTION_END_************************/
+/*********************_VAR_TABLE_FUNCTION_END_************************/
+int find_var(struct var_table *tp, char *name)
+{
+    for(int i = 0; i < tp->size; ++i)
+        if(StrMatch(name, (tp->contents + i)->var_name))
+            return i;
 
-void Mode(char *args);
+    return -1;
+}
+struct var_pair *get_var(struct var_table *tp, int index)
+{
+    return (tp->contents + index);
+}
 
-/*********************_MODE_MODULE_START_************************/
+void double_size(void *tp)
+{
+    struct var_table *this = (struct var_table *)tp;
+    struct var_pair *new_contents = (struct var_pair *)malloc(2 * this->max_size * sizeof(struct var_pair));
+    memcpy(new_contents, this->contents, this->max_size * sizeof(struct var_pair));
+    this->max_size *= 2;
+    free(this->contents);
+    this->contents = new_contents;
+}
+/*********************_VAR_TABLE_MODULE_START_************************/
 
 
 
@@ -529,7 +640,7 @@ void Mode(char *args);
 
 void GetHelp(void)
 {
-    printf("Operators usable(rank by count priorities):\n\n\
+    printf("Operators usable(rank by calculation priorities):\n\n\
                ( )   mod     !!         !       ^     \n\
             brackets mod factorial2 factorial power   \n\
                 %%        *         /      +     -\n\
@@ -546,7 +657,8 @@ void GetHelp(void)
             Input example:cos[2 ^ (1.23 + 5 mod 2) * PI] - 2 !\n\
             The computer ignores spaces, and is case-insensitive.\n");
     puts("");
-    printf("Tips:\n\
+    printf("ps:\n\
            1: Use \"%%num\" to get output[num]\n\
-           2: Use brackets to demarcate exponent\n\n");
+           2: Use brackets to demarcate exponent\n\
+           3: support assignments, but name of variates should only consist of alphabets\n\n");
 }

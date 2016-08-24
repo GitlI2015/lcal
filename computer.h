@@ -6,46 +6,32 @@
 
 
 
-
-typedef struct exp
+struct val_t
 {
-    char chr[MAX_SIZE];
-    double num[MAX_SIZE];
-} EXP;
+    void *value;
+    enum {matrix, normal, function} val_type;
+};
 
-/*
+struct var_pair
+{
+    char var_name[20];
+	struct val_t val;
+};
 
-			mathematic expression consistss of
-			digit numbers and mathematic charactors.
-			(ignoring brackets)charactors and numbers
-			appears one by one
-
- */
-
-
-
-int stkl[BRKT_MAX] = {0};
-int stkr[BRKT_MAX] = {0};
-int lctl, rctl;
-int lbrkt = 0;
-
-/*
-
-			stacks
-
- */
+struct var_table
+{
+    void *this;
+    struct var_pair* contents;
+    int size;
+    int max_size;
+    void (*resize)(void *);
+};
 
 
-int Match(int lb_pos);
+int find_var(struct var_table *, char *);
+struct var_pair *get_var(struct var_table *, int );
 
-double SubCompute(char *, int );
-double Core_Cmp(EXP *);
 
-double StringToFloat(char *, int *);
-
-double MacroReplace(char *, int *);
-int StrMatch(const char *, const char *);
-int IsInteger(double );
 
 void Mode(char *);
 void Reset(void);
@@ -67,15 +53,6 @@ long long int Factorial(int , int );
 
 
 //Compute mathematic expression by backtracking
-
-
-
-
-
-
-
-
-
 
 
 

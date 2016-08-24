@@ -1,4 +1,5 @@
-CFLAGS=-Wall -lm
+CFLAGS=-Wall -lm -std=c99
+
 CC=gcc
 
 TARGET=lcal
@@ -8,7 +9,7 @@ SRCS=computer.c\
 OBJS=$(SRCS:.c=.o)
 
 %.o:%.c
-	$(CC) -o $@ -c $<
+	$(CC) -o $@ -c $< -std=c99
 
 $(TARGET):$(OBJS)
 #	@echo TARGET:$@
