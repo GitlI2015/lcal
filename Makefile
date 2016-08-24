@@ -1,4 +1,5 @@
-CFLAGS=-Wall -lm -std=c99
+CFLAGS=-Wall -lm -std=c99 -lreadline
+
 
 CC=gcc
 

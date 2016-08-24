@@ -51,6 +51,10 @@ int lbrkt = 0;
  */
 
 
+#if defined __unix
+extern char *complete_list[];
+extern int list_size;
+#endif
 
 void Compute(char *args, int max)
 {
@@ -506,8 +510,8 @@ double MacroReplace(char *args, int *start)
                     double *v = (double *)malloc(sizeof(double));
                     *v = SubCompute(args + (*start) + 1, length - (*start) - 1);
                     var->val.value = v;
-					(*start)=length;
-					return *v;
+                    (*start) = length;
+                    return *v;
                 } else {
                     (*start)--;
 
@@ -521,7 +525,19 @@ double MacroReplace(char *args, int *start)
                 while(isspace(args[((*start))])) ++(*start);
 
                 if(args[*start] == '=') {
+					for(int i=0;i<13;++i)
+					{
+						if(StrMatch(complete_list[i],t))
+						{
+							printf("error: \"%s\" is reserved, you shouldn't assign value for it\n",t);
+							err_sgn=1;
+							return 0;
+						}
+					}
                     strcpy(table.contents[table.size].var_name, t);
+#if defined __unix
+                    complete_list[list_size++] = (char *)&table.contents[table.size].var_name;
+#endif
                     table.contents[table.size].val.val_type = normal;
                     double *v = (double *)malloc(sizeof(double));
                     *v = SubCompute(args + (*start) + 1, length - (*start) - 1);
@@ -660,5 +676,6 @@ void GetHelp(void)
     printf("ps:\n\
            1: Use \"%%num\" to get output[num]\n\
            2: Use brackets to demarcate exponent\n\
-           3: support assignments, but name of variates should only consist of alphabets\n\n");
+           3: support assignments, but name of variates should only consist of alphabets\n\
+           4: function names are reserved \n\n");
 }
