@@ -670,7 +670,7 @@ void GetHelp(void)
             EL(e)  = %f  GM (Eular Gamma)  = %f\n\
             PI(Pi) = %f  PHI(golden ratio) = %f\n", EL, GM, PI, PHI);
     printf("Input form:\n\
-            Input example:cos[2 ^ (1.23 + 5 mod 2) * PI] - 2 !\n\
+            Input example:cos(2 ^ (1.23 + 5 mod 2) * PI) - 2 !\n\
             The computer ignores spaces, and is case-insensitive.\n");
     puts("");
     printf("ps:\n\
