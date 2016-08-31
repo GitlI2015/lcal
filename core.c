@@ -688,7 +688,7 @@ void GetHelp(void)
 void pFloat(double n)
 {
 	static char r[1024];
-	fprintf(r,"%.12f",n);
+	sprintf(r,"%.12f",n);
 	for(int i=strlen(r)-1;i>0;--i)
 		if(r[i]!='0')
 			if(r[i]=='.')
