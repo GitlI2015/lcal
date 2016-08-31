@@ -38,6 +38,8 @@ double MacroReplace(char *, int *);
 int StrMatch(const char *, const char *);
 int IsInteger(double );
 
+void pFloat(double ); //print float with proper digits
+
 
 int stkl[BRKT_MAX] = {0};
 int stkr[BRKT_MAX] = {0};
@@ -84,7 +86,11 @@ void Compute(char *args, int max)
         if(IsInteger(Answers[Answer_Counter - 1]))
             printf("Output[%d]:%lld\n", Answer_Counter, (long long)Answers[Answer_Counter - 1]);
         else
-            printf("Output[%d]:%.12f\n", Answer_Counter, Answers[Answer_Counter - 1]);
+		{
+            printf("Output[%d]:", Answer_Counter);
+			pFloat(Answers[Answer_Counter - 1]);
+			putchar('\n');
+		}
 
         Answer_Counter++;
     }
@@ -678,4 +684,23 @@ void GetHelp(void)
            2: Use brackets to demarcate exponent\n\
            3: support assignments, but name of variates should only consist of alphabets\n\
            4: function names are reserved \n\n");
+}
+void pFloat(double n)
+{
+	static char r[1024];
+	fprintf(r,"%.12f",n);
+	for(int i=strlen(r)-1;i>0;--i)
+		if(r[i]!='0')
+			if(r[i]=='.')
+			{
+				r[i]='\0';
+				printf("%s",r);
+				return;
+			}
+			else
+			{
+				r[i+1]='\0';
+				printf("%s",r);
+				return;
+			}
 }
