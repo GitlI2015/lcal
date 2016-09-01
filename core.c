@@ -576,7 +576,9 @@ double MacroReplace(char *args, int *start)
 
 int StrMatch(const char *arg_1, const char *arg_2) //Assistant function
 {
-    int len = strlen(arg_2);
+    int len = strlen(arg_1);
+	int len2 = strlen(arg_2);
+	if(len != len2) return 0;
     char p1[len], p2[len];
     int i;
 
