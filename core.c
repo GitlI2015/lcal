@@ -113,6 +113,11 @@ double SubCompute(char *args, int max)
             err_sgn = 1;
             exit_flag = 1;
             return 0;
+        } else if(StrMatch(args, "clear")) {
+			printf("Variable table has been cleared.\n");
+			err_sgn = 1;
+			table.size = 0;
+			return 0;
         }
     }
 
@@ -525,15 +530,14 @@ double MacroReplace(char *args, int *start)
                 while(isspace(args[((*start))])) ++(*start);
 
                 if(args[*start] == '=') {
-					for(int i=0;i<13;++i)
-					{
-						if(StrMatch(complete_list[i],t))
-						{
-							printf("error: \"%s\" is reserved, you shouldn't assign value for it\n",t);
-							err_sgn=1;
-							return 0;
-						}
-					}
+                    for(int i = 0; i < BASE_SIZE; ++i) {
+                        if(StrMatch(complete_list[i], t)) {
+                            printf("error: \"%s\" is reserved, you shouldn't assign value for it\n", t);
+                            err_sgn = 1;
+                            return 0;
+                        }
+                    }
+
                     strcpy(table.contents[table.size].var_name, t);
 #if defined __unix
                     complete_list[list_size++] = (char *)&table.contents[table.size].var_name;

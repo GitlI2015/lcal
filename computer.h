@@ -2,6 +2,7 @@
 #ifndef __COMPUTER_H_
 #define __COMPUTER_H_
 
+#define BASE_SIZE 15
 
 
 

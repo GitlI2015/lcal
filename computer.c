@@ -29,9 +29,10 @@ int exit_flag = 0;
 char *func_generator(const char *, int);
 char **lcal_completion(const char *, int , int);
 char *complete_list[MAX_SIZE] = {"sin", "cos", "tan", "asin", "acos", "atan", \
-                                 "sinh", "cosh", "tanh", "asinh", "acosh", "atanh", "log"\
+                                 "sinh", "cosh", "tanh", "asinh", "acosh", "atanh", "log",\
+                                 "exit", "clear"\
                                 };
-int list_size = 13;
+int list_size = BASE_SIZE;
 char *dupstr(const char *);
 
 #endif
@@ -59,9 +60,10 @@ int main()
         snprintf(args, MAX_SIZE, " Input[%d]:", Answer_Counter);
         input = readline(args);
 
-        if(!input || strlen(input) == 0)
+        if(!input)
             break;
-
+		if(strlen(input) == 0)
+			continue;
         Compute(input, strlen(input));
         add_history(input);
 #else
@@ -117,8 +119,9 @@ char *func_generator(const char *text, int state)
     }
 
     while(name = complete_list[list_index]) {
-		if(list_index==list_size)
-			break;
+        if(list_index == list_size)
+            break;
+
         list_index++;
 
         if(strncmp(name, text, len) == 0)
