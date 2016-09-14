@@ -2,6 +2,7 @@
 #ifndef __COMPUTER_H_
 #define __COMPUTER_H_
 
+#define BASE_SIZE 15
 
 
 
@@ -13,8 +14,7 @@ struct val_t
 };
 
 struct var_pair
-{
-    char var_name[20];
+{ char var_name[20];
 	struct val_t val;
 };
 
