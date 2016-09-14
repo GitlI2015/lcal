@@ -38,11 +38,7 @@ double MacroReplace(char *, int *);
 int StrMatch(const char *, const char *);
 int IsInteger(double );
 
-<<<<<<< HEAD
 void pFloat(double ); //print float with proper digits
-
-=======
->>>>>>> sub
 
 int stkl[BRKT_MAX] = {0};
 int stkr[BRKT_MAX] = {0};
@@ -89,15 +85,11 @@ void Compute(char *args, int max)
         if(IsInteger(Answers[Answer_Counter - 1]))
             printf("Output[%d]:%lld\n", Answer_Counter, (long long)Answers[Answer_Counter - 1]);
         else
-<<<<<<< HEAD
 		{
             printf("Output[%d]:", Answer_Counter);
 			pFloat(Answers[Answer_Counter - 1]);
 			putchar('\n');
 		}
-=======
-            printf("Output[%d]:%.12f\n", Answer_Counter, Answers[Answer_Counter - 1]);
->>>>>>> sub
 
         Answer_Counter++;
     }
@@ -126,14 +118,11 @@ double SubCompute(char *args, int max)
             err_sgn = 1;
             exit_flag = 1;
             return 0;
-<<<<<<< HEAD
-=======
         } else if(StrMatch(args, "clear")) {
 			printf("Variable table has been cleared.\n");
 			err_sgn = 1;
 			table.size = 0;
 			return 0;
->>>>>>> sub
         }
     }
 
@@ -546,17 +535,6 @@ double MacroReplace(char *args, int *start)
                 while(isspace(args[((*start))])) ++(*start);
 
                 if(args[*start] == '=') {
-<<<<<<< HEAD
-					for(int i=0;i<13;++i)
-					{
-						if(StrMatch(complete_list[i],t))
-						{
-							printf("error: \"%s\" is reserved, you shouldn't assign value for it\n",t);
-							err_sgn=1;
-							return 0;
-						}
-					}
-=======
                     for(int i = 0; i < BASE_SIZE; ++i) {
                         if(StrMatch(complete_list[i], t)) {
                             printf("error: \"%s\" is reserved, you shouldn't assign value for it\n", t);
@@ -565,7 +543,6 @@ double MacroReplace(char *args, int *start)
                         }
                     }
 
->>>>>>> sub
                     strcpy(table.contents[table.size].var_name, t);
 #if defined __unix
                     complete_list[list_size++] = (char *)&table.contents[table.size].var_name;
@@ -602,13 +579,9 @@ double MacroReplace(char *args, int *start)
 
 int StrMatch(const char *arg_1, const char *arg_2) //Assistant function
 {
-<<<<<<< HEAD
     int len = strlen(arg_1);
 	int len2 = strlen(arg_2);
 	if(len != len2) return 0;
-=======
-    int len = strlen(arg_2);
->>>>>>> sub
     char p1[len], p2[len];
     int i;
 
@@ -708,11 +681,7 @@ void GetHelp(void)
             EL(e)  = %f  GM (Eular Gamma)  = %f\n\
             PI(Pi) = %f  PHI(golden ratio) = %f\n", EL, GM, PI, PHI);
     printf("Input form:\n\
-<<<<<<< HEAD
             Input example:cos(2 ^ (1.23 + 5 mod 2) * PI) - 2 !\n\
-=======
-            Input example:cos[2 ^ (1.23 + 5 mod 2) * PI] - 2 !\n\
->>>>>>> sub
             The computer ignores spaces, and is case-insensitive.\n");
     puts("");
     printf("ps:\n\
@@ -721,7 +690,6 @@ void GetHelp(void)
            3: support assignments, but name of variates should only consist of alphabets\n\
            4: function names are reserved \n\n");
 }
-<<<<<<< HEAD
 void pFloat(double n)
 {
 	static char r[1024];
@@ -741,5 +709,3 @@ void pFloat(double n)
 				return;
 			}
 }
-=======
->>>>>>> sub

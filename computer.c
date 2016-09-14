@@ -60,16 +60,10 @@ int main()
         snprintf(args, MAX_SIZE, " Input[%d]:", Answer_Counter);
         input = readline(args);
 
-<<<<<<< HEAD
-        if(!input || strlen(input) == 0)
-            break;
-
-=======
         if(!input)
             break;
 		if(strlen(input) == 0)
 			continue;
->>>>>>> sub
         Compute(input, strlen(input));
         add_history(input);
 #else
@@ -125,14 +119,9 @@ char *func_generator(const char *text, int state)
     }
 
     while(name = complete_list[list_index]) {
-<<<<<<< HEAD
-		if(list_index==list_size)
-			break;
-=======
         if(list_index == list_size)
             break;
 
->>>>>>> sub
         list_index++;
 
         if(strncmp(name, text, len) == 0)
