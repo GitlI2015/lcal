@@ -453,6 +453,7 @@ double MacroReplace(char *args, int *start)
 
     if (args[(*start) + 1] == '(') {
         i = (*start)++;
+		lp = args + (*start) + 1;
 
         do {
             if (args[(*start)] == '(') cnt_l++;
@@ -469,25 +470,24 @@ double MacroReplace(char *args, int *start)
         } while (cnt_l != cnt_r);
 
         (*start)--;
-        lp = args + i + 2;
         sl = (*start) - i - 2;
 
         if (i - temp == 2) {
-            if      (StrMatch(args + temp, "sin")) return sin(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "cos")) return cos(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "tan")) return tan(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "log")) return log(SubCompute(lp, sl));
+            if      (StrMatch(t, "sin")) return sin(SubCompute(lp, sl));
+            else if (StrMatch(t, "cos")) return cos(SubCompute(lp, sl));
+            else if (StrMatch(t, "tan")) return tan(SubCompute(lp, sl));
+            else if (StrMatch(t, "log")) return log(SubCompute(lp, sl));
         } else if (i - temp == 3) {
-            if      (StrMatch(args + temp, "sinh")) return sinh(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "cosh")) return cosh(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "tanh")) return tanh(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "asin")) return asin(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "acos")) return acos(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "atan")) return atan(SubCompute(lp, sl));
+            if      (StrMatch(t, "sinh")) return sinh(SubCompute(lp, sl));
+            else if (StrMatch(t, "cosh")) return cosh(SubCompute(lp, sl));
+            else if (StrMatch(t, "tanh")) return tanh(SubCompute(lp, sl));
+            else if (StrMatch(t, "asin")) return asin(SubCompute(lp, sl));
+            else if (StrMatch(t, "acos")) return acos(SubCompute(lp, sl));
+            else if (StrMatch(t, "atan")) return atan(SubCompute(lp, sl));
         } else if (i - temp == 4) {
-            if      (StrMatch(args + temp, "asinh")) return asinh(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "acosh")) return acosh(SubCompute(lp, sl));
-            else if (StrMatch(args + temp, "atanh")) return atanh(SubCompute(lp, sl));
+            if      (StrMatch(t, "asinh")) return asinh(SubCompute(lp, sl));
+            else if (StrMatch(t, "acosh")) return acosh(SubCompute(lp, sl));
+            else if (StrMatch(t, "atanh")) return atanh(SubCompute(lp, sl));
         } else {
             printf("error: function unidentified:\"");
 
@@ -501,10 +501,10 @@ double MacroReplace(char *args, int *start)
 
     } else {
 
-        if      (StrMatch(args + temp, "EL" ) && !isalpha(args[temp + 2])) return EL;
-        else if (StrMatch(args + temp, "GM" ) && !isalpha(args[temp + 2])) return GM;
-        else if (StrMatch(args + temp, "PI" ) && !isalpha(args[temp + 2])) return PI;
-        else if (StrMatch(args + temp, "PHI") && !isalpha(args[temp + 3])) return PHI;
+        if      (StrMatch(t, "EL" ) && !isalpha(args[temp + 2])) return EL;
+        else if (StrMatch(t, "GM" ) && !isalpha(args[temp + 2])) return GM;
+        else if (StrMatch(t, "PI" ) && !isalpha(args[temp + 2])) return PI;
+        else if (StrMatch(t, "PHI") && !isalpha(args[temp + 3])) return PHI;
         else {
             int index = find_var(&table, t);
             struct var_pair *var;
