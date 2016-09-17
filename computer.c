@@ -21,6 +21,10 @@ struct var_table table;
 int Answer_Counter = 1;
 int err_sgn = 0;
 int exit_flag = 0;
+char *complete_list[MAX_SIZE] = {"sin", "cos", "tan", "asin", "acos", "atan", \
+                                 "sinh", "cosh", "tanh", "asinh", "acosh", "atanh", "log",\
+                                 "exit", "clear"\
+                                };
 
 /*
 			declaration
@@ -28,10 +32,6 @@ int exit_flag = 0;
 #if defined __unix
 char *func_generator(const char *, int);
 char **lcal_completion(const char *, int , int);
-char *complete_list[MAX_SIZE] = {"sin", "cos", "tan", "asin", "acos", "atan", \
-                                 "sinh", "cosh", "tanh", "asinh", "acosh", "atanh", "log",\
-                                 "exit", "clear"\
-                                };
 int list_size = BASE_SIZE;
 char *dupstr(const char *);
 

@@ -12,6 +12,7 @@ extern struct var_table table;
 extern int Answer_Counter;
 extern int err_sgn;
 extern int exit_flag;
+extern char *complete_list[];
 
 typedef struct exp {
     char chr[MAX_SIZE];
@@ -53,7 +54,6 @@ int lbrkt = 0;
 
 
 #if defined __unix
-extern char *complete_list[];
 extern int list_size;
 #endif
 
