@@ -1,5 +1,10 @@
+dbg= 
 CFLAGS=-Wall -lm -std=c99 -lreadline
+DEBGUG=
 
+ifeq ($(dbg),true)
+	DEBUG=-g
+endif
 
 CC=gcc
 
@@ -10,12 +15,12 @@ SRCS=computer.c\
 OBJS=$(SRCS:.c=.o)
 
 %.o:%.c
-	$(CC) -o $@ -c $< -std=c99
+	$(CC) $(DEBUG) -o $@ -c $< -std=c99  
 
 $(TARGET):$(OBJS)
 #	@echo TARGET:$@
 #	@echo OBJECTS:$^
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) $(DEBUG) -o $@ $^ $(CFLAGS)
 
 clean:
 	rm -rf $(TARGET) $(OBJS)
