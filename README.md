@@ -1,4 +1,4 @@
-##lcal
+##  lcal
 
 `lcal` is a simple calculator that can handle basic calculations.
 I make it when i was learning c.
