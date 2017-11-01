@@ -445,7 +445,10 @@ double MacroReplace(char *args, int *start)
     char t[20];
 
     while (isalpha(args[(*start)]) && (*start) < length)
-        t[(*start) - temp] = args[(*start)++];
+    {
+        t[(*start) - temp] = args[(*start)];
+        ++(*start);
+    }
 
     t[(*start) - temp] = '\0';
 
